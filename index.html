@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CS Prep Guide</title>
+  <meta name="description" content="CS Prep Guide — Practice CS PYQs with AI-powered explanations and deep concept analysis." />
+
+  <!-- Open Graph for WhatsApp/Telegram link previews -->
+  <meta property="og:title" content="CS Prep Guide" />
+  <meta property="og:description" content="Free CS exam quiz bot with PYQs, AI Deep Dive, analytics & JRF Readiness Meter. Practice with friends!" />
+  <meta property="og:type" content="website" />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- React 18 UMD (production) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel Standalone: transpiles JSX in the browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: #0F172A;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #E2E8F0;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { min-height: 100vh; }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0F172A; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4F46E5; }
+
+    /* Loading screen shown before React mounts */
+    #loading-screen {
+      position: fixed; inset: 0;
+      background: #0F172A;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+    #loading-screen .logo {
+      font-size: 32px; font-weight: 900;
+      background: linear-gradient(90deg,#818CF8,#A78BFA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #loading-screen .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid #334155;
+      border-top-color: #4F46E5;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    #loading-screen .sub {
+      font-size: 13px; color: #475569;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Loading screen (hidden once React mounts) -->
+  <div id="loading-screen">
+    <div class="logo">CS Prep Guide</div>
+    <div class="spinner"></div>
+    <div class="sub">Loading quiz engine...</div>
+  </div>
+
+  <!-- React mounts here -->
+  <div id="root"></div>
+
+  <!-- Main App: JSX transpiled by Babel at runtime -->
+  <script type="text/babel">
+const { useState, useEffect, useCallback  } = React;
+
+// ─── PYQ DATA ───────────────────────────────────────────────────────────────
+const PYQ_DATA = [
+  // Unit 1: Discrete Structures & Theory of Computation
+  {
+    id: 1, unit: 1, unitName: "Discrete Structures & TOC",
+    topic: "Automata Theory", subtopic: "DFA",
+    year: 2019, difficulty: "Medium",
+    question: "Which of the following languages is accepted by a Deterministic Finite Automaton (DFA)?",
+    options: ["Regular Language", "Context-Free Language", "Recursive Language", "Recursively Enumerable Language"],
+    correct: 0,
+    explanation: "DFAs accept exactly the class of Regular Languages. This is the foundation of automata theory — every DFA can be converted to an NFA and vice versa, and both accept only regular languages.",
+    whyCorrect: "DFA = Regular Language. By definition, a language is regular if and only if there exists a DFA that accepts it. This is proven by Kleene's theorem.",
+    whyWrong: ["This IS correct — Regular languages are exactly the languages DFAs accept.", "CFL requires a Pushdown Automaton (PDA), not a DFA. DFAs have no stack memory.", "Recursive languages need a Turing Machine that always halts. DFAs are far weaker.", "RE languages need a Turing Machine (may or may not halt). DFAs cannot simulate TMs."],
+    relatedConcepts: ["NFA to DFA conversion", "Pumping Lemma for Regular Languages", "Myhill-Nerode Theorem", "Regular Expressions"],
+    memoryTrick: "DFA → Regular. Think 'D for Definite = R for Regular'. Both are the simplest level of Chomsky hierarchy.",
+    pyqFrequency: "Very High",
+    pyqCount: 12,
+    futureTopics: ["NFA equivalence", "ε-NFA", "Minimization of DFA", "Regular Grammar"]
+  },
+  {
+    id: 2, unit: 1, unitName: "Discrete Structures & TOC",
+    topic: "Graph Theory", subtopic: "Graph Coloring",
+    year: 2021, difficulty: "Hard",
+    question: "What is the chromatic number of a complete graph K₅?",
+    options: ["3", "4", "5", "6"],
+    correct: 2,
+    explanation: "In a complete graph Kₙ, every vertex is adjacent to every other vertex. Therefore, each vertex must receive a distinct color. For K₅, all 5 vertices are mutually adjacent, requiring 5 distinct colors.",
+    whyCorrect: "Chromatic number χ(Kₙ) = n. In K₅, since every pair of vertices is connected, no two vertices can share a color, requiring exactly 5 colors.",
+    whyWrong: ["3 colors would work for planar graphs via the Four Color Theorem, but K₅ is non-planar and needs more.", "4 colors satisfy any planar graph (Four Color Theorem), but K₅ is not planar.", "5 is correct.", "K₅ needs exactly 5, not 6. Adding extra colors is unnecessary."],
+    relatedConcepts: ["Four Color Theorem", "Planar Graphs", "Bipartite Graphs", "Graph Coloring Applications"],
+    memoryTrick: "χ(Kₙ) = n. Complete graph needs n colors because all n vertices 'fight' with each other.",
+    pyqFrequency: "High",
+    pyqCount: 7,
+    futureTopics: ["Bipartite graph coloring (2 colors)", "Chromatic polynomial", "Graph planarity"]
+  },
+  {
+    id: 3, unit: 1, unitName: "Discrete Structures & TOC",
+    topic: "Automata Theory", subtopic: "Pumping Lemma",
+    year: 2018, difficulty: "Hard",
+    question: "The language L = {aⁿbⁿ | n ≥ 1} is:",
+    options: ["Regular", "Context-Free but not Regular", "Recursive but not Context-Free", "Recursively Enumerable but not Recursive"],
+    correct: 1,
+    explanation: "L = {aⁿbⁿ} is the classic example of a CFL that is not regular. A PDA can accept it by pushing 'a's and popping for each 'b'. The Pumping Lemma for Regular Languages proves it is NOT regular.",
+    whyCorrect: "A PDA accepts aⁿbⁿ by counting: push each 'a', then pop for each 'b'. If the stack is empty at the end, accept. No DFA/NFA can count arbitrarily.",
+    whyWrong: ["Pumping Lemma disproves this: if regular, pumping the 'a' part creates aᵐbⁿ (m≠n) which violates the pattern.", "Correct — it is CFL but not Regular.", "All CFLs are recursive (CFL ⊂ Recursive). It is recursive but it IS also context-free.", "All CFLs are RE. But it is not merely RE — it is CFL."],
+    relatedConcepts: ["Pumping Lemma for CFL", "Pushdown Automata", "Chomsky Hierarchy", "CYK Algorithm"],
+    memoryTrick: "aⁿbⁿ = PDA needed = CFL. 'n must match n' needs memory = stack needed = not regular.",
+    pyqFrequency: "Very High",
+    pyqCount: 15,
+    futureTopics: ["aⁿbⁿcⁿ (CSL)", "PDA design", "Ambiguous grammars"]
+  },
+
+  // Unit 4: DBMS
+  {
+    id: 4, unit: 4, unitName: "Database Management Systems",
+    topic: "Normalization", subtopic: "3NF vs BCNF",
+    year: 2020, difficulty: "Medium",
+    question: "A relation schema R is in BCNF if for every functional dependency X → Y in R, which condition must hold?",
+    options: ["Y is a prime attribute", "X is a superkey", "X → Y is trivial or Y is a prime attribute", "X is a candidate key or Y ⊆ X"],
+    correct: 1,
+    explanation: "BCNF (Boyce-Codd Normal Form) requires that for every non-trivial FD X → Y, X must be a superkey. This is stricter than 3NF which allows Y to be a prime attribute as an alternative.",
+    whyCorrect: "BCNF: For every non-trivial FD X → Y, X must be a superkey. This eliminates all anomalies caused by FDs where the determinant is not a superkey.",
+    whyWrong: ["This describes 2NF/3NF relaxation, not BCNF. BCNF ignores whether Y is prime.", "Correct — X must be a superkey in BCNF.", "This describes 3NF condition, not BCNF. BCNF is stricter.", "X → Y is trivial means Y ⊆ X. The full BCNF definition is: trivial OR X is superkey."],
+    relatedConcepts: ["Functional Dependencies", "3NF decomposition", "Lossless Join", "Dependency Preservation"],
+    memoryTrick: "BCNF: Left side (X) must always be Super. '3NF allows prime on right, BCNF does NOT care about right side.'",
+    pyqFrequency: "Very High",
+    pyqCount: 18,
+    futureTopics: ["4NF (Multi-valued dependencies)", "5NF", "Armstrong's Axioms", "Minimal Cover"]
+  },
+  {
+    id: 5, unit: 4, unitName: "Database Management Systems",
+    topic: "Transaction Management", subtopic: "ACID Properties",
+    year: 2022, difficulty: "Easy",
+    question: "Which ACID property ensures that a transaction brings the database from one valid state to another?",
+    options: ["Atomicity", "Consistency", "Isolation", "Durability"],
+    correct: 1,
+    explanation: "Consistency ensures that a transaction takes the database from one consistent (valid) state to another. Integrity constraints must hold before and after the transaction.",
+    whyCorrect: "Consistency: DB must satisfy integrity constraints before and after transaction. E.g., if account balance ≥ 0 is a rule, no transaction can violate this.",
+    whyWrong: ["Atomicity = all-or-nothing execution. Either all operations succeed or none do (rollback). Not about valid states.", "Correct — Consistency ensures valid state transitions.", "Isolation = concurrent transactions don't interfere. Each transaction executes as if alone.", "Durability = committed data persists even after system failure. Uses logs/checkpoints."],
+    relatedConcepts: ["Serializability", "Transaction States", "Deadlock Handling", "Recovery Techniques"],
+    memoryTrick: "ACID → A=Atomic, C=Consistent(valid), I=Isolated(alone), D=Durable(permanent). 'ACID keeps DB healthy.'",
+    pyqFrequency: "High",
+    pyqCount: 9,
+    futureTopics: ["Conflict Serializability", "Two-Phase Locking", "MVCC", "Deadlock Detection"]
+  },
+  {
+    id: 6, unit: 4, unitName: "Database Management Systems",
+    topic: "SQL", subtopic: "Joins",
+    year: 2019, difficulty: "Medium",
+    question: "Which type of JOIN returns all rows from both tables, with NULLs for non-matching rows?",
+    options: ["INNER JOIN", "LEFT OUTER JOIN", "RIGHT OUTER JOIN", "FULL OUTER JOIN"],
+    correct: 3,
+    explanation: "FULL OUTER JOIN returns all rows from BOTH tables. Where there's no match, NULL is placed. It is the union of LEFT and RIGHT outer joins.",
+    whyCorrect: "FULL OUTER JOIN = ALL rows from left + ALL rows from right + NULLs where no match. It's LEFT JOIN ∪ RIGHT JOIN.",
+    whyWrong: ["INNER JOIN returns ONLY matching rows. No NULLs, no unmatched rows.", "LEFT OUTER JOIN: all rows from LEFT table, NULLs for unmatched RIGHT rows.", "RIGHT OUTER JOIN: all rows from RIGHT table, NULLs for unmatched LEFT rows.", "Correct — FULL OUTER JOIN covers both sides."],
+    relatedConcepts: ["Natural Join", "Cross Join (Cartesian)", "Self Join", "Equijoin vs Non-equijoin"],
+    memoryTrick: "FULL = FULL coverage of both tables. 'Neither side gets left out in a FULL JOIN.'",
+    pyqFrequency: "High",
+    pyqCount: 6,
+    futureTopics: ["Relational Algebra operators", "Division operation", "Query optimization"]
+  },
+
+  // Unit 5: Data Structures & Algorithms
+  {
+    id: 7, unit: 5, unitName: "Data Structures & Algorithms",
+    topic: "Sorting Algorithms", subtopic: "Complexity",
+    year: 2017, difficulty: "Easy",
+    question: "Which sorting algorithm has O(n log n) worst-case time complexity?",
+    options: ["Quick Sort", "Bubble Sort", "Merge Sort", "Selection Sort"],
+    correct: 2,
+    explanation: "Merge Sort guarantees O(n log n) in all cases (best, average, worst). Quick Sort's worst case is O(n²) (already sorted input with bad pivot selection). Bubble and Selection are always O(n²).",
+    whyCorrect: "Merge Sort always divides into 2 halves (log n levels), and merging takes O(n) per level → O(n log n) always. No worst-case degradation.",
+    whyWrong: ["Quick Sort average = O(n log n), but worst case = O(n²) (sorted array with first element as pivot).", "Bubble Sort: O(n²) always. Compares adjacent elements repeatedly.", "Correct — Merge Sort.", "Selection Sort: O(n²) always. Finds minimum n times."],
+    relatedConcepts: ["Heap Sort (also O(n log n) worst)", "Tim Sort", "Counting Sort", "Radix Sort"],
+    memoryTrick: "Merge Sort = guaranteed O(n log n). 'Merge always keeps its promise unlike Quick who sometimes breaks it.'",
+    pyqFrequency: "Very High",
+    pyqCount: 20,
+    futureTopics: ["Heap Sort analysis", "External Sorting", "Lower bound of comparison sorting Ω(n log n)"]
+  },
+  {
+    id: 8, unit: 5, unitName: "Data Structures & Algorithms",
+    topic: "Trees", subtopic: "AVL Trees",
+    year: 2023, difficulty: "Hard",
+    question: "The minimum number of nodes in an AVL tree of height h is given by:",
+    options: ["2^h - 1", "N(h) = N(h-1) + N(h-2) + 1", "N(h) = 2*N(h-1)", "⌊log₂ h⌋"],
+    correct: 1,
+    explanation: "The minimum nodes in an AVL tree of height h follows the recurrence: N(h) = N(h-1) + N(h-2) + 1, with N(0)=1 and N(1)=2. This is because the two subtrees differ in height by at most 1 (AVL property).",
+    whyCorrect: "To minimize nodes at height h: root (1 node) + one subtree of height h-1 (min) + one subtree of height h-2 (min). This gives N(h) = N(h-1) + N(h-2) + 1.",
+    whyWrong: ["2^h - 1 is the maximum nodes in a perfect binary tree of height h, not minimum AVL.", "Correct — the Fibonacci-like recurrence for minimum AVL nodes.", "N(h) = 2*N(h-1) would mean both subtrees are equal height, but AVL allows difference of 1.", "⌊log₂ h⌋ makes no sense dimensionally — this is not a valid recurrence for node count."],
+    relatedConcepts: ["AVL Rotations (LL, RR, LR, RL)", "Red-Black Trees", "B-Trees", "Splay Trees"],
+    memoryTrick: "AVL min nodes ~ Fibonacci! N(h) = N(h-1) + N(h-2) + 1. The '+1' is the root.",
+    pyqFrequency: "High",
+    pyqCount: 8,
+    futureTopics: ["AVL rotation cases", "Height of AVL tree given n nodes", "B+ tree order"]
+  },
+  {
+    id: 9, unit: 5, unitName: "Data Structures & Algorithms",
+    topic: "Dynamic Programming", subtopic: "Bellman-Ford",
+    year: 2020, difficulty: "Hard",
+    question: "Bellman-Ford algorithm detects negative weight cycles and runs in time:",
+    options: ["O(V log V)", "O(V + E)", "O(VE)", "O(V²)"],
+    correct: 2,
+    explanation: "Bellman-Ford relaxes all E edges, V-1 times → O(VE). On the Vth iteration, if any relaxation occurs, a negative cycle exists. Unlike Dijkstra, it handles negative weights.",
+    whyCorrect: "Outer loop: V-1 iterations. Inner loop: E edges relaxed each time. Total = O((V-1)×E) = O(VE).",
+    whyWrong: ["O(V log V) is too fast and not achievable for this problem with negative edges.", "O(V + E) is BFS/DFS time, not Bellman-Ford.", "Correct — O(VE).", "O(V²) could apply to dense graphs where E = O(V²), making Bellman-Ford O(V³) in such cases."],
+    relatedConcepts: ["Dijkstra's Algorithm O((V+E)log V)", "Floyd-Warshall O(V³)", "SSSP vs APSP", "Johnson's Algorithm"],
+    memoryTrick: "Bell-man Ford: V-1 rounds × E edges = VE. 'V rings of the Bell, each time checking E edges.'",
+    pyqFrequency: "High",
+    pyqCount: 10,
+    futureTopics: ["Negative cycle detection", "Johnson's algorithm", "DAG shortest path using topological sort"]
+  },
+
+  // Unit 8: Operating Systems
+  {
+    id: 10, unit: 8, unitName: "Operating Systems",
+    topic: "Process Scheduling", subtopic: "CPU Scheduling",
+    year: 2021, difficulty: "Medium",
+    question: "Which CPU scheduling algorithm may lead to the 'convoy effect'?",
+    options: ["Round Robin", "Shortest Job First (SJF)", "First Come First Serve (FCFS)", "Priority Scheduling"],
+    correct: 2,
+    explanation: "FCFS suffers from the Convoy Effect: a long process holds the CPU while many short processes wait behind it, like cars stuck behind a slow truck. This severely degrades throughput.",
+    whyCorrect: "FCFS is non-preemptive and serves in arrival order. A long job at the front blocks all others → Convoy Effect. Average waiting time becomes very high.",
+    whyWrong: ["Round Robin uses time quanta, so no process monopolizes CPU. No convoy effect.", "SJF picks shortest job next — long jobs wait, short ones go first. Opposite of convoy effect.", "Correct — FCFS causes convoy effect.", "Priority Scheduling can cause starvation (low priority jobs wait forever) but not specifically convoy effect."],
+    relatedConcepts: ["Starvation vs Convoy Effect", "Preemptive vs Non-preemptive", "Aging technique", "Multilevel Queue Scheduling"],
+    memoryTrick: "FCFS = First Come First STUCK. 'Like a convoy: one slow truck, everyone stuck.'",
+    pyqFrequency: "Very High",
+    pyqCount: 14,
+    futureTopics: ["Starvation in Priority Scheduling", "SRTF (preemptive SJF)", "Multilevel Feedback Queue"]
+  },
+  {
+    id: 11, unit: 8, unitName: "Operating Systems",
+    topic: "Memory Management", subtopic: "Page Replacement",
+    year: 2018, difficulty: "Hard",
+    question: "Belady's anomaly states that increasing the number of frames can lead to more page faults. Which algorithm exhibits this anomaly?",
+    options: ["LRU", "Optimal Page Replacement", "FIFO", "LFU"],
+    correct: 2,
+    explanation: "Belady's Anomaly is specific to FIFO page replacement. When frames increase, FIFO may paradoxically cause MORE page faults. LRU and Optimal are 'stack algorithms' and are immune to this anomaly.",
+    whyCorrect: "FIFO replaces the page that came in earliest, regardless of recent use. Increasing frames changes eviction decisions in unpredictable ways, causing Belady's anomaly.",
+    whyWrong: ["LRU is a stack algorithm — immune to Belady's anomaly. More frames always means ≤ page faults.", "Optimal (OPT) is also a stack algorithm — immune to Belady's anomaly. Theoretical best.", "Correct — FIFO exhibits Belady's anomaly.", "LFU doesn't exhibit Belady's anomaly in the same way as FIFO."],
+    relatedConcepts: ["Thrashing", "Working Set Model", "Clock Algorithm", "Demand Paging"],
+    memoryTrick: "Belady's = FIFO's Fault. 'FIFO is the only famous one that behaves badly when given more space.'",
+    pyqFrequency: "Very High",
+    pyqCount: 16,
+    futureTopics: ["Thrashing and working set", "Clock page replacement", "TLB and page table structures"]
+  },
+  {
+    id: 12, unit: 8, unitName: "Operating Systems",
+    topic: "Deadlocks", subtopic: "Deadlock Detection",
+    year: 2022, difficulty: "Medium",
+    question: "Which of the following conditions is NOT required for a deadlock to occur?",
+    options: ["Mutual Exclusion", "Hold and Wait", "Preemption", "Circular Wait"],
+    correct: 2,
+    explanation: "Deadlock requires: Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait (Coffman's conditions). 'Preemption' itself is NOT a condition — 'No Preemption' (inability to take resources away) is required.",
+    whyCorrect: "The four Coffman conditions are: Mutual Exclusion, Hold & Wait, NO Preemption, Circular Wait. The presence of 'Preemption' would actually PREVENT deadlock.",
+    whyWrong: ["Mutual Exclusion IS required: at least one resource must be non-shareable.", "Hold and Wait IS required: a process must hold ≥1 resource and wait for more.", "Correct — Preemption prevents deadlock; 'No Preemption' is the actual condition required.", "Circular Wait IS required: a circular chain of processes each waiting for the next."],
+    relatedConcepts: ["Banker's Algorithm", "Resource Allocation Graph", "Deadlock Prevention vs Avoidance", "Safe State"],
+    memoryTrick: "Coffman: ME + HW + NP + CW. MHNC → 'Me Hold, No Circular' gives deadlock.",
+    pyqFrequency: "High",
+    pyqCount: 11,
+    futureTopics: ["Banker's Algorithm safe state", "RAG with cycles", "Deadlock recovery strategies"]
+  },
+
+  // Unit 9: Computer Networks
+  {
+    id: 13, unit: 9, unitName: "Computer Networks",
+    topic: "OSI Model", subtopic: "Layer Functions",
+    year: 2016, difficulty: "Easy",
+    question: "Which layer of the OSI model is responsible for end-to-end error detection and correction?",
+    options: ["Network Layer", "Data Link Layer", "Transport Layer", "Session Layer"],
+    correct: 2,
+    explanation: "The Transport Layer (Layer 4) provides end-to-end reliable delivery using TCP (connection-oriented) or UDP (connectionless). It handles segmentation, reassembly, flow control, and error recovery between hosts.",
+    whyCorrect: "Transport Layer: end-to-end reliability. TCP provides error detection + correction + retransmission between the two end hosts, not just adjacent nodes.",
+    whyWrong: ["Network Layer handles logical addressing and routing (IP addresses). Error handling is node-to-node at best via ICMP.", "Data Link Layer handles node-to-node (hop-by-hop) error detection using CRC. NOT end-to-end.", "Correct — Transport Layer for end-to-end.", "Session Layer manages sessions/dialogues (setup, teardown). No direct error correction."],
+    relatedConcepts: ["TCP vs UDP", "3-way Handshake", "Sliding Window Protocol", "Congestion Control"],
+    memoryTrick: "Transport = Trustworthy end-to-end. 'T for Transport, T for TCP, T for Trustworthy delivery.'",
+    pyqFrequency: "Very High",
+    pyqCount: 22,
+    futureTopics: ["TCP congestion control (slow start, AIMD)", "UDP applications", "Socket programming concepts"]
+  },
+  {
+    id: 14, unit: 9, unitName: "Computer Networks",
+    topic: "IP Addressing", subtopic: "Subnetting",
+    year: 2023, difficulty: "Hard",
+    question: "How many usable host addresses are available in a /26 subnet?",
+    options: ["64", "62", "32", "30"],
+    correct: 1,
+    explanation: "A /26 subnet has 26 bits for network and 6 bits for hosts. 2⁶ = 64 total addresses. Subtract 2 (network address + broadcast address) = 62 usable hosts.",
+    whyCorrect: "/26 → 6 host bits → 2⁶ = 64 total → 64 - 2 = 62 usable hosts. The -2 removes network ID and broadcast.",
+    whyWrong: ["64 is the total addresses including network and broadcast — not usable.", "Correct — 62 usable hosts.", "32 would correspond to /27 (5 host bits → 32 total, 30 usable).", "30 is usable hosts for /27, not /26."],
+    relatedConcepts: ["CIDR Notation", "Subnet Mask", "VLSM", "Supernetting"],
+    memoryTrick: "Host bits = 32 - prefix. Usable = 2^(host bits) - 2. '/26 = 6 host bits = 64 - 2 = 62'",
+    pyqFrequency: "High",
+    pyqCount: 8,
+    futureTopics: ["VLSM design", "Route aggregation (supernetting)", "Private IP ranges (RFC 1918)"]
+  },
+
+  // Unit 7: Compiler Design
+  {
+    id: 15, unit: 7, unitName: "Compiler Design & System Software",
+    topic: "Parsing", subtopic: "LL vs LR Parsers",
+    year: 2019, difficulty: "Hard",
+    question: "Which of the following grammars CANNOT be parsed by an LL(1) parser?",
+    options: ["LL(1) grammar", "Left-recursive grammar", "Unambiguous grammar", "Right-recursive grammar"],
+    correct: 1,
+    explanation: "LL(1) parsers cannot handle left-recursive grammars because they cause infinite loops during top-down parsing. Left recursion must be eliminated before an LL(1) parser can be built.",
+    whyCorrect: "Left recursion (A → Aα) causes LL(1) to loop infinitely: to expand A, it tries A again → infinite recursion. Left recursion elimination is mandatory for LL parsing.",
+    whyWrong: ["LL(1) grammar is by definition parseable by LL(1) parser.", "Correct — Left-recursive grammars cannot be parsed by LL(1).", "Unambiguous grammars can be LL(1) if they also satisfy FIRST/FOLLOW conditions.", "Right-recursive grammars (A → αA) are fine for LL(1). They terminate."],
+    relatedConcepts: ["FIRST and FOLLOW sets", "LL(1) parse table construction", "LR(0), SLR(1), LALR(1), CLR(1)", "Left factoring"],
+    memoryTrick: "LL = Left-to-right, Leftmost derivation. Left recursion kills LL. 'LL hates Left Loops.'",
+    pyqFrequency: "High",
+    pyqCount: 9,
+    futureTopics: ["SLR vs LALR vs CLR power comparison", "Shift-reduce conflicts", "YACC/Bison tool"]
+  }
+];
+
+const UNITS = [
+  { id: 1, name: "Discrete Structures & TOC", color: "#6366F1" },
+  { id: 4, name: "Database Management Systems", color: "#10B981" },
+  { id: 5, name: "Data Structures & Algorithms", color: "#F59E0B" },
+  { id: 7, name: "Compiler Design", color: "#EC4899" },
+  { id: 8, name: "Operating Systems", color: "#3B82F6" },
+  { id: 9, name: "Computer Networks", color: "#8B5CF6" },
+];
+
+const FREQ_COLORS = {
+  "Very High": "#EF4444",
+  "High": "#F59E0B",
+  "Medium": "#3B82F6",
+  "Low": "#6B7280"
+};
+
+const DIFFICULTY_COLORS = {
+  "Easy": "#10B981",
+  "Medium": "#F59E0B",
+  "Hard": "#EF4444"
+};
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+const storage = {
+  get: (key, def) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } },
+  set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+};
+
+// ─── MAIN APP ────────────────────────────────────────────────────────────────
+function App() {
+  const [view, setView] = useState("dashboard");
+  const [quizState, setQuizState] = useState(null);
+  const [stats, setStats] = useState(() => storage.get("cs_prep_guide_stats", {
+    attempted: 0, correct: 0, byUnit: {}, byTopic: {}, history: []
+  }));
+
+  const saveStats = (newStats) => {
+    setStats(newStats);
+    storage.set("cs_prep_guide_stats", newStats);
+  };
+
+  const startQuiz = (mode, filter = {}) => {
+    let pool = [...PYQ_DATA];
+    if (filter.unit) pool = pool.filter(q => q.unit === filter.unit);
+    if (filter.difficulty) pool = pool.filter(q => q.difficulty === filter.difficulty);
+    if (mode === "jrf") pool = pool.filter(q => q.difficulty === "Hard");
+    if (mode === "weak") {
+      const weakUnits = Object.entries(stats.byUnit || {})
+        .filter(([, s]) => s.attempted > 0 && (s.correct / s.attempted) < 0.5)
+        .map(([u]) => parseInt(u));
+      if (weakUnits.length > 0) pool = pool.filter(q => weakUnits.includes(q.unit));
+    }
+    pool = pool.sort(() => Math.random() - 0.5).slice(0, 10);
+    setQuizState({ mode, questions: pool, current: 0, answers: [], score: 0 });
+    setView("quiz");
+  };
+
+  const recordAnswer = (qId, unitId, topic, correct) => {
+    const ns = { ...stats };
+    ns.attempted = (ns.attempted || 0) + 1;
+    ns.correct = (ns.correct || 0) + (correct ? 1 : 0);
+    ns.byUnit = ns.byUnit || {};
+    ns.byUnit[unitId] = ns.byUnit[unitId] || { attempted: 0, correct: 0 };
+    ns.byUnit[unitId].attempted++;
+    if (correct) ns.byUnit[unitId].correct++;
+    ns.byTopic = ns.byTopic || {};
+    ns.byTopic[topic] = ns.byTopic[topic] || { attempted: 0, correct: 0 };
+    ns.byTopic[topic].attempted++;
+    if (correct) ns.byTopic[topic].correct++;
+    ns.history = [{ qId, correct, time: Date.now() }, ...(ns.history || [])].slice(0, 50);
+    saveStats(ns);
+  };
+
+  const accuracy = stats.attempted > 0 ? Math.round((stats.correct / stats.attempted) * 100) : 0;
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#0F172A", color: "#E2E8F0", fontFamily: "'Inter', sans-serif" }}>
+      {/* Header */}
+      <header style={{
+        borderBottom: "1px solid #1E293B",
+        padding: "0 24px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        height: 60, background: "#0F172A", position: "sticky", top: 0, zIndex: 50
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px", background: "linear-gradient(90deg,#818CF8,#A78BFA)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>CS Prep Guide</span>
+          <span style={{ fontSize: 12, background: "#312E81", color: "#A5B4FC", padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>CS Prep</span>
+        </div>
+        <nav style={{ display: "flex", gap: 4 }}>
+          {[["dashboard","Dashboard"],["modes","Quiz Modes"],["analytics","Analytics"]].map(([v, label]) => (
+            <button key={v} onClick={() => setView(v)} style={{
+              padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600,
+              background: view === v ? "#4F46E5" : "transparent",
+              color: view === v ? "#fff" : "#94A3B8",
+              transition: "all 0.15s"
+            }}>{label}</button>
+          ))}
+        </nav>
+      </header>
+
+      {view === "dashboard" && <Dashboard stats={stats} accuracy={accuracy} onStart={startQuiz} />}
+      {view === "modes" && <ModesPage onStart={startQuiz} />}
+      {view === "quiz" && quizState && (
+        <QuizPage
+          quizState={quizState}
+          setQuizState={setQuizState}
+          onRecord={recordAnswer}
+          onExit={() => setView("dashboard")}
+        />
+      )}
+      {view === "analytics" && <AnalyticsPage stats={stats} />}
+    </div>
+  );
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function Dashboard({ stats, accuracy, onStart }) {
+  const unitAccuracy = UNITS.map(u => {
+    const s = stats.byUnit?.[u.id];
+    const acc = s?.attempted > 0 ? Math.round((s.correct / s.attempted) * 100) : null;
+    return { ...u, acc, attempted: s?.attempted || 0 };
+  });
+
+  return (
+    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "32px 20px" }}>
+      {/* Hero */}
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: "-0.5px" }}>
+          Welcome back 👋
+        </h1>
+        <p style={{ color: "#64748B", margin: "4px 0 0", fontSize: 14 }}>
+          CS Prep Guide · {PYQ_DATA.length} PYQs from 2016–2023
+        </p>
+      </div>
+
+      {/* Stats Row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+        {[
+          { label: "Questions Attempted", value: stats.attempted || 0, color: "#4F46E5", icon: "📝" },
+          { label: "Correct Answers", value: stats.correct || 0, color: "#10B981", icon: "✅" },
+          { label: "Overall Accuracy", value: `${accuracy}%`, color: accuracy >= 70 ? "#10B981" : accuracy >= 50 ? "#F59E0B" : "#EF4444", icon: "🎯" },
+          { label: "Topics Covered", value: Object.keys(stats.byTopic || {}).length, color: "#8B5CF6", icon: "📚" },
+        ].map(s => (
+          <div key={s.label} style={{
+            background: "#1E293B", borderRadius: 16, padding: "20px",
+            border: `1px solid #334155`, position: "relative", overflow: "hidden"
+          }}>
+            <div style={{ fontSize: 24, marginBottom: 8 }}>{s.icon}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: 12, color: "#64748B", marginTop: 2 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick Start */}
+      <div style={{ marginBottom: 32 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, color: "#94A3B8", textTransform: "uppercase", letterSpacing: 1 }}>Quick Start</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          {[
+            { label: "📅 PYQ Mode", desc: "Previous Year Questions", mode: "pyq", color: "#4F46E5" },
+            { label: "🧠 JRF Booster", desc: "Hard & Conceptual Questions", mode: "jrf", color: "#DC2626" },
+            { label: "🎯 Weak Topics", desc: "Attack your weak areas", mode: "weak", color: "#D97706" },
+          ].map(m => (
+            <button key={m.mode} onClick={() => onStart(m.mode)} style={{
+              background: "#1E293B", border: `1px solid #334155`,
+              borderRadius: 14, padding: "20px 16px", cursor: "pointer",
+              textAlign: "left", transition: "all 0.15s", color: "inherit"
+            }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = m.color}
+              onMouseLeave={e => e.currentTarget.style.borderColor = "#334155"}
+            >
+              <div style={{ fontSize: 20, marginBottom: 8 }}>{m.label}</div>
+              <div style={{ fontSize: 13, color: "#64748B" }}>{m.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Unit Progress */}
+      <div>
+        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, color: "#94A3B8", textTransform: "uppercase", letterSpacing: 1 }}>Unit-Wise Progress</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+          {unitAccuracy.map(u => (
+            <div key={u.id} style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: 14, padding: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#CBD5E1" }}>{u.name}</span>
+                <span style={{ fontSize: 12, color: "#64748B" }}>{u.attempted} attempted</span>
+              </div>
+              <div style={{ background: "#0F172A", borderRadius: 99, height: 6, overflow: "hidden" }}>
+                <div style={{
+                  height: "100%", borderRadius: 99,
+                  background: u.acc !== null ? u.color : "#334155",
+                  width: `${u.acc ?? 0}%`,
+                  transition: "width 0.6s ease"
+                }} />
+              </div>
+              <div style={{ marginTop: 6, fontSize: 12, color: u.acc !== null ? u.color : "#64748B", fontWeight: 600 }}>
+                {u.acc !== null ? `${u.acc}% accuracy` : "Not started"}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── MODES PAGE ───────────────────────────────────────────────────────────────
+function ModesPage({ onStart }) {
+  const [selectedUnit, setSelectedUnit] = useState(null);
+  const [selectedDiff, setSelectedDiff] = useState(null);
+
+  const modes = [
+    { id: "pyq", icon: "📅", label: "PYQ Mode", desc: "Curated previous year questions with year badges and PYQ frequency indicators.", color: "#4F46E5" },
+    { id: "topic", icon: "📖", label: "Topic Revision", desc: "Deep dive into one unit at a time. Filter by unit and difficulty.", color: "#10B981" },
+    { id: "weak", icon: "🎯", label: "Weak Topic Attack", desc: "Automatically targets topics where your accuracy is below 50%.", color: "#F59E0B" },
+    { id: "jrf", icon: "🚀", label: "JRF Booster", desc: "Only Hard conceptual questions — for those targeting JRF rank.", color: "#DC2626" },
+  ];
+
+  return (
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>Quiz Modes</h1>
+      <p style={{ color: "#64748B", fontSize: 14, marginBottom: 32 }}>Choose your study mode</p>
+
+      {/* Filters */}
+      <div style={{ background: "#1E293B", borderRadius: 14, padding: 20, marginBottom: 24, border: "1px solid #334155" }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#94A3B8", marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.8 }}>Optional Filters</div>
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 12, color: "#64748B", marginBottom: 6 }}>Filter by Unit</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {UNITS.map(u => (
+              <button key={u.id} onClick={() => setSelectedUnit(selectedUnit === u.id ? null : u.id)} style={{
+                padding: "5px 12px", borderRadius: 20, border: "1px solid",
+                borderColor: selectedUnit === u.id ? u.color : "#334155",
+                background: selectedUnit === u.id ? u.color + "22" : "transparent",
+                color: selectedUnit === u.id ? u.color : "#94A3B8",
+                fontSize: 12, cursor: "pointer", fontWeight: 600
+              }}>{u.name.split("&")[0].trim()}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 12, color: "#64748B", marginBottom: 6 }}>Filter by Difficulty</div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {["Easy", "Medium", "Hard"].map(d => (
+              <button key={d} onClick={() => setSelectedDiff(selectedDiff === d ? null : d)} style={{
+                padding: "5px 14px", borderRadius: 20, border: "1px solid",
+                borderColor: selectedDiff === d ? DIFFICULTY_COLORS[d] : "#334155",
+                background: selectedDiff === d ? DIFFICULTY_COLORS[d] + "22" : "transparent",
+                color: selectedDiff === d ? DIFFICULTY_COLORS[d] : "#94A3B8",
+                fontSize: 12, cursor: "pointer", fontWeight: 600
+              }}>{d}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        {modes.map(m => (
+          <button key={m.id} onClick={() => onStart(m.id, { unit: selectedUnit, difficulty: selectedDiff })} style={{
+            background: "#1E293B", border: `1px solid #334155`, borderRadius: 16,
+            padding: "24px 20px", cursor: "pointer", textAlign: "left",
+            transition: "all 0.15s", color: "inherit"
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = m.color; e.currentTarget.style.background = "#243147"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#334155"; e.currentTarget.style.background = "#1E293B"; }}
+          >
+            <div style={{ fontSize: 28, marginBottom: 10 }}>{m.icon}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6, color: m.color }}>{m.label}</div>
+            <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.5 }}>{m.desc}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── QUIZ PAGE ────────────────────────────────────────────────────────────────
+function QuizPage({ quizState, setQuizState, onRecord, onExit }) {
+  const [selected, setSelected] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [aiExplanation, setAiExplanation] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const { questions, current, answers, score } = quizState;
+  const q = questions[current];
+
+  const handleSubmit = () => {
+    if (selected === null) return;
+    const correct = selected === q.correct;
+    setSubmitted(true);
+    setShowExplanation(true);
+    onRecord(q.id, q.unit, q.topic, correct);
+    setQuizState(qs => ({
+      ...qs,
+      answers: [...qs.answers, { qId: q.id, selected, correct }],
+      score: qs.score + (correct ? 1 : 0)
+    }));
+  };
+
+  const handleNext = () => {
+    if (current + 1 >= questions.length) {
+      setQuizState(qs => ({ ...qs, current: qs.current + 1 }));
+    } else {
+      setQuizState(qs => ({ ...qs, current: qs.current + 1 }));
+      setSelected(null);
+      setSubmitted(false);
+      setShowExplanation(false);
+      setAiExplanation(null);
+    }
+  };
+
+  const fetchAiDeepDive = async () => {
+    setAiLoading(true);
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `You are a CS Prep Guide expert. For this question, provide a deep exam-focused analysis in JSON only (no markdown, no backticks):
+Question: "${q.question}"
+Topic: ${q.topic} | Subtopic: ${q.subtopic} | Year: ${q.year}
+Correct answer: "${q.options[q.correct]}"
+
+Return ONLY valid JSON with these keys:
+{
+  "examinerThinking": "Why examiners love testing this concept (2 sentences)",
+  "conceptRevision": ["3-4 bullet points revising the core concept"],
+  "likelyNextQuestions": ["3 future questions the examiner might ask"],
+  "commonMistakes": "The most common mistake students make on this type of question (1-2 sentences)"
+}`
+          }]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.[0]?.text || "";
+      const clean = text.replace(/```json|```/g, "").trim();
+      setAiExplanation(JSON.parse(clean));
+    } catch {
+      setAiExplanation({ examinerThinking: "Could not load AI analysis.", conceptRevision: [], likelyNextQuestions: [], commonMistakes: "" });
+    }
+    setAiLoading(false);
+  };
+
+  // Quiz complete
+  if (current >= questions.length) {
+    const finalScore = quizState.score;
+    const total = questions.length;
+    const pct = Math.round((finalScore / total) * 100);
+    return (
+      <div style={{ maxWidth: 600, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
+        <div style={{ background: "#1E293B", borderRadius: 24, padding: 40, border: "1px solid #334155" }}>
+          <div style={{ fontSize: 60, marginBottom: 16 }}>{pct >= 70 ? "🎉" : pct >= 50 ? "💪" : "📚"}</div>
+          <h2 style={{ fontSize: 28, fontWeight: 800, margin: 0 }}>Quiz Complete!</h2>
+          <div style={{ fontSize: 48, fontWeight: 800, margin: "20px 0", color: pct >= 70 ? "#10B981" : pct >= 50 ? "#F59E0B" : "#EF4444" }}>
+            {finalScore}/{total}
+          </div>
+          <div style={{ fontSize: 16, color: "#64748B", marginBottom: 24 }}>{pct}% accuracy</div>
+          {/* Score bar */}
+          <div style={{ background: "#0F172A", borderRadius: 99, height: 10, overflow: "hidden", marginBottom: 24 }}>
+            <div style={{ height: "100%", width: `${pct}%`, background: pct >= 70 ? "#10B981" : pct >= 50 ? "#F59E0B" : "#EF4444", borderRadius: 99, transition: "width 1s ease" }} />
+          </div>
+          <div style={{ fontSize: 14, color: "#94A3B8", marginBottom: 28 }}>
+            {pct >= 70 ? "Excellent! You're JRF-ready on these topics." : pct >= 50 ? "Good progress! Review wrong answers for better retention." : "Keep practicing! Focus on conceptual understanding."}
+          </div>
+          <button onClick={onExit} style={{
+            background: "#4F46E5", color: "#fff", border: "none", borderRadius: 12,
+            padding: "12px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer"
+          }}>Back to Dashboard</button>
+        </div>
+      </div>
+    );
+  }
+
+  const progress = ((current) / questions.length) * 100;
+
+  return (
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 20px" }}>
+      {/* Progress */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <span style={{ fontSize: 13, color: "#64748B" }}>Question {current + 1} of {questions.length}</span>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#10B981" }}>✅ {score} correct</span>
+            <button onClick={onExit} style={{ background: "none", border: "1px solid #334155", color: "#64748B", padding: "4px 10px", borderRadius: 8, cursor: "pointer", fontSize: 12 }}>Exit</button>
+          </div>
+        </div>
+        <div style={{ background: "#1E293B", borderRadius: 99, height: 4, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${progress}%`, background: "#4F46E5", borderRadius: 99, transition: "width 0.3s" }} />
+        </div>
+      </div>
+
+      {/* Question Card */}
+      <div style={{ background: "#1E293B", borderRadius: 20, border: "1px solid #334155", overflow: "hidden" }}>
+        {/* Meta badges */}
+        <div style={{ padding: "16px 20px 0", display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11, fontWeight: 700, background: "#1E293B", border: "1px solid #334155", color: "#94A3B8", padding: "3px 8px", borderRadius: 20 }}>📅 {q.year}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, background: DIFFICULTY_COLORS[q.difficulty] + "22", color: DIFFICULTY_COLORS[q.difficulty], padding: "3px 8px", borderRadius: 20 }}>
+            {q.difficulty}
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 700, background: "#312E81", color: "#A5B4FC", padding: "3px 8px", borderRadius: 20 }}>
+            {q.topic}
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 700, background: FREQ_COLORS[q.pyqFrequency] + "22", color: FREQ_COLORS[q.pyqFrequency], padding: "3px 8px", borderRadius: 20 }}>
+            🔥 PYQ {q.pyqFrequency} ({q.pyqCount}×)
+          </span>
+        </div>
+
+        {/* Question */}
+        <div style={{ padding: "20px 20px 0" }}>
+          <p style={{ fontSize: 17, fontWeight: 600, lineHeight: 1.6, margin: 0, color: "#F1F5F9" }}>{q.question}</p>
+        </div>
+
+        {/* Options */}
+        <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+          {q.options.map((opt, i) => {
+            let bg = "#0F172A", border = "#334155", color = "#CBD5E1";
+            if (submitted) {
+              if (i === q.correct) { bg = "#064E3B"; border = "#10B981"; color = "#6EE7B7"; }
+              else if (i === selected && i !== q.correct) { bg = "#450A0A"; border = "#EF4444"; color = "#FCA5A5"; }
+            } else if (selected === i) {
+              bg = "#1E1B4B"; border = "#4F46E5"; color = "#A5B4FC";
+            }
+            return (
+              <button key={i} onClick={() => !submitted && setSelected(i)} style={{
+                background: bg, border: `1px solid ${border}`, borderRadius: 12,
+                padding: "14px 16px", textAlign: "left", cursor: submitted ? "default" : "pointer",
+                color, fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", gap: 12,
+                transition: "all 0.15s"
+              }}>
+                <span style={{ minWidth: 24, height: 24, borderRadius: 6, border: `1px solid ${border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#1E293B" }}>
+                  {submitted && i === q.correct ? "✓" : submitted && i === selected && i !== q.correct ? "✗" : String.fromCharCode(65 + i)}
+                </span>
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Submit */}
+        {!submitted && (
+          <div style={{ padding: "0 20px 20px" }}>
+            <button onClick={handleSubmit} disabled={selected === null} style={{
+              width: "100%", background: selected !== null ? "#4F46E5" : "#1E293B",
+              color: selected !== null ? "#fff" : "#475569",
+              border: "none", borderRadius: 12, padding: "13px", fontSize: 15,
+              fontWeight: 600, cursor: selected !== null ? "pointer" : "default",
+              transition: "all 0.15s"
+            }}>Submit Answer</button>
+          </div>
+        )}
+      </div>
+
+      {/* Explanation */}
+      {showExplanation && (
+        <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Result banner */}
+          <div style={{
+            background: selected === q.correct ? "#064E3B" : "#450A0A",
+            border: `1px solid ${selected === q.correct ? "#10B981" : "#EF4444"}`,
+            borderRadius: 16, padding: "16px 20px",
+            display: "flex", alignItems: "center", gap: 12
+          }}>
+            <span style={{ fontSize: 24 }}>{selected === q.correct ? "✅" : "❌"}</span>
+            <div>
+              <div style={{ fontWeight: 700, color: selected === q.correct ? "#6EE7B7" : "#FCA5A5", fontSize: 15 }}>
+                {selected === q.correct ? "Correct!" : `Incorrect — Correct answer: ${q.options[q.correct]}`}
+              </div>
+              <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 2 }}>{q.explanation}</div>
+            </div>
+          </div>
+
+          {/* Detailed Explanation */}
+          <div style={{ background: "#1E293B", borderRadius: 16, border: "1px solid #334155", overflow: "hidden" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #334155", fontWeight: 700, color: "#A5B4FC", fontSize: 14 }}>
+              📝 Detailed Explanation
+            </div>
+            <div style={{ padding: 20 }}>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#10B981", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>Why Correct?</div>
+                <p style={{ color: "#CBD5E1", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{q.whyCorrect}</p>
+              </div>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#EF4444", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 8 }}>Why Other Options Are Wrong?</div>
+                {q.options.map((opt, i) => i !== q.correct && (
+                  <div key={i} style={{ marginBottom: 8 }}>
+                    <span style={{ fontWeight: 600, color: "#F87171", fontSize: 13 }}>({String.fromCharCode(65 + i)}) {opt}: </span>
+                    <span style={{ color: "#94A3B8", fontSize: 13 }}>{q.whyWrong[i]}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>💡 Memory Trick</div>
+                <p style={{ color: "#FDE68A", fontSize: 14, lineHeight: 1.6, margin: 0, background: "#292400", padding: "10px 14px", borderRadius: 10, borderLeft: "3px solid #F59E0B" }}>{q.memoryTrick}</p>
+              </div>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#8B5CF6", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>🔗 Related Concepts</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {q.relatedConcepts.map(c => (
+                    <span key={c} style={{ background: "#312E81", color: "#C4B5FD", fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 500 }}>{c}</span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#3B82F6", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>🔮 Examiner May Ask Next</div>
+                {q.futureTopics.map(t => (
+                  <div key={t} style={{ fontSize: 13, color: "#93C5FD", padding: "3px 0" }}>→ {t}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* AI Deep Dive */}
+          <div style={{ background: "#1E293B", borderRadius: 16, border: "1px solid #334155", overflow: "hidden" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontWeight: 700, color: "#F59E0B", fontSize: 14 }}>🤖 AI Deep Dive</div>
+              {!aiExplanation && !aiLoading && (
+                <button onClick={fetchAiDeepDive} style={{
+                  background: "#292400", color: "#FDE68A", border: "1px solid #92400E",
+                  borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer"
+                }}>Generate AI Analysis</button>
+              )}
+            </div>
+            <div style={{ padding: 20 }}>
+              {aiLoading && <div style={{ color: "#64748B", fontSize: 14, textAlign: "center", padding: "20px 0" }}>🔄 Generating AI analysis...</div>}
+              {!aiLoading && !aiExplanation && (
+                <div style={{ color: "#64748B", fontSize: 13 }}>Click "Generate AI Analysis" for examiner mindset, concept revision, and predicted future questions powered by Claude AI.</div>
+              )}
+              {aiExplanation && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {aiExplanation.examinerThinking && (
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>🧠 Examiner's Thinking</div>
+                      <p style={{ color: "#FDE68A", fontSize: 13, lineHeight: 1.6, margin: 0 }}>{aiExplanation.examinerThinking}</p>
+                    </div>
+                  )}
+                  {aiExplanation.conceptRevision?.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#818CF8", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>📚 Quick Revision Points</div>
+                      {aiExplanation.conceptRevision.map((pt, i) => (
+                        <div key={i} style={{ fontSize: 13, color: "#C4B5FD", padding: "3px 0" }}>• {pt}</div>
+                      ))}
+                    </div>
+                  )}
+                  {aiExplanation.likelyNextQuestions?.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#34D399", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>🔮 Likely Future Questions</div>
+                      {aiExplanation.likelyNextQuestions.map((q, i) => (
+                        <div key={i} style={{ fontSize: 13, color: "#6EE7B7", padding: "4px 0", borderBottom: "1px solid #0F172A" }}>→ {q}</div>
+                      ))}
+                    </div>
+                  )}
+                  {aiExplanation.commonMistakes && (
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#F87171", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 6 }}>⚠️ Common Mistake</div>
+                      <p style={{ color: "#FCA5A5", fontSize: 13, lineHeight: 1.6, margin: 0 }}>{aiExplanation.commonMistakes}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next button */}
+          <button onClick={handleNext} style={{
+            background: "#4F46E5", color: "#fff", border: "none", borderRadius: 12,
+            padding: "13px", fontSize: 15, fontWeight: 600, cursor: "pointer", width: "100%"
+          }}>
+            {current + 1 >= questions.length ? "See Results →" : "Next Question →"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── ANALYTICS PAGE ───────────────────────────────────────────────────────────
+function AnalyticsPage({ stats }) {
+  const unitData = UNITS.map(u => {
+    const s = stats.byUnit?.[u.id] || { attempted: 0, correct: 0 };
+    return { ...u, ...s, acc: s.attempted > 0 ? Math.round((s.correct / s.attempted) * 100) : 0 };
+  });
+
+  const topicData = Object.entries(stats.byTopic || {}).map(([topic, s]) => ({
+    topic, ...s, acc: s.attempted > 0 ? Math.round((s.correct / s.attempted) * 100) : 0
+  })).sort((a, b) => a.acc - b.acc);
+
+  const weakTopics = topicData.filter(t => t.acc < 60);
+  const strongTopics = topicData.filter(t => t.acc >= 70);
+
+  const overallAcc = stats.attempted > 0 ? Math.round((stats.correct / stats.attempted) * 100) : 0;
+  const jrfReadiness = Math.min(100, Math.round(overallAcc * 1.1));
+
+  return (
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>Analytics</h1>
+      <p style={{ color: "#64748B", fontSize: 14, marginBottom: 28 }}>Your performance insights</p>
+
+      {/* JRF Meter */}
+      <div style={{ background: "linear-gradient(135deg, #1E1B4B, #312E81)", borderRadius: 20, padding: "24px 28px", marginBottom: 24, border: "1px solid #4F46E5" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#A5B4FC", textTransform: "uppercase", letterSpacing: 0.8 }}>JRF Readiness Meter</div>
+            <div style={{ fontSize: 11, color: "#6366F1", marginTop: 2 }}>Based on your accuracy across topics</div>
+          </div>
+          <div style={{ fontSize: 36, fontWeight: 800, color: jrfReadiness >= 70 ? "#34D399" : jrfReadiness >= 50 ? "#FDE68A" : "#F87171" }}>
+            {stats.attempted === 0 ? "—" : `${jrfReadiness}%`}
+          </div>
+        </div>
+        <div style={{ background: "#1E1B4B", borderRadius: 99, height: 10, overflow: "hidden" }}>
+          <div style={{
+            height: "100%", borderRadius: 99,
+            background: jrfReadiness >= 70 ? "#10B981" : jrfReadiness >= 50 ? "#F59E0B" : "#EF4444",
+            width: `${jrfReadiness}%`, transition: "width 0.8s ease"
+          }} />
+        </div>
+        <div style={{ marginTop: 10, fontSize: 12, color: "#818CF8" }}>
+          {stats.attempted === 0 ? "Attempt some questions to see your JRF readiness." : jrfReadiness >= 70 ? "🎉 Looking strong for JRF! Keep the momentum." : jrfReadiness >= 50 ? "📈 On track. Focus on weak topics to boost your JRF chances." : "📚 More practice needed. Target concept clarity over speed."}
+        </div>
+      </div>
+
+      {/* Unit Accuracy Chart */}
+      <div style={{ background: "#1E293B", borderRadius: 20, border: "1px solid #334155", padding: "24px", marginBottom: 20 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 20, color: "#CBD5E1" }}>Unit-Wise Accuracy</div>
+        {unitData.map(u => (
+          <div key={u.id} style={{ marginBottom: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <span style={{ fontSize: 13, color: "#94A3B8" }}>{u.name}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: u.attempted > 0 ? u.color : "#64748B" }}>
+                {u.attempted > 0 ? `${u.acc}%` : "Not attempted"} {u.attempted > 0 && `(${u.correct}/${u.attempted})`}
+              </span>
+            </div>
+            <div style={{ background: "#0F172A", borderRadius: 99, height: 8, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${u.acc}%`, background: u.color, borderRadius: 99, transition: "width 0.6s ease" }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Weak & Strong Topics */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ background: "#1E293B", borderRadius: 16, border: "1px solid #334155", padding: 20 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#EF4444", marginBottom: 16 }}>⚠️ Weak Topics</div>
+          {weakTopics.length === 0
+            ? <div style={{ color: "#64748B", fontSize: 13 }}>{stats.attempted === 0 ? "Start attempting questions first!" : "No weak topics — great job!"}</div>
+            : weakTopics.map(t => (
+              <div key={t.topic} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #0F172A" }}>
+                <span style={{ fontSize: 13, color: "#CBD5E1" }}>{t.topic}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#EF4444", background: "#450A0A", padding: "2px 8px", borderRadius: 20 }}>{t.acc}%</span>
+              </div>
+            ))
+          }
+        </div>
+        <div style={{ background: "#1E293B", borderRadius: 16, border: "1px solid #334155", padding: 20 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#10B981", marginBottom: 16 }}>💪 Strong Topics</div>
+          {strongTopics.length === 0
+            ? <div style={{ color: "#64748B", fontSize: 13 }}>{stats.attempted === 0 ? "Start attempting questions first!" : "Keep practicing to build strengths!"}</div>
+            : strongTopics.map(t => (
+              <div key={t.topic} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #0F172A" }}>
+                <span style={{ fontSize: 13, color: "#CBD5E1" }}>{t.topic}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#10B981", background: "#064E3B", padding: "2px 8px", borderRadius: 20 }}>{t.acc}%</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+    // ─── MOUNT ────────────────────────────────────────────────────────────────
+    const rootEl = document.getElementById('root');
+    const appRoot = ReactDOM.createRoot(rootEl);
+    appRoot.render(<App />);
+
+    // Hide loading screen once React has mounted
+    const loadingEl = document.getElementById('loading-screen');
+    if (loadingEl) {
+      loadingEl.style.opacity = '0';
+      setTimeout(() => loadingEl.remove(), 300);
+    }
+  </script>
+
+</body>
+</html>
